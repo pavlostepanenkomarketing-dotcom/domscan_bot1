@@ -1,0 +1,32 @@
+import os
+from telegram.ext import Updater, CommandHandler
+from evaluator import evaluate_domain
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+def start(update, context):
+    update.message.reply_text("👋 Привет! Отправь домен, и я проверю его стоимость.")
+
+def check_domain(update, context):
+    domain = " ".join(context.args)
+    if not domain:
+        update.message.reply_text("❗ Напиши домен, пример:\n/check google.com")
+        return
+
+    update.message.reply_text("⏳ Проверяю...")
+
+    price = evaluate_domain(domain)
+    update.message.reply_text(f"💡 Результат: {price}")
+
+def main():
+    updater = Updater(TELEGRAM_TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("check", check_domain))
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == "__main__":
+    main()
