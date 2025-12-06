@@ -1,0 +1,19 @@
+import requests
+from bs4 import BeautifulSoup
+
+def evaluate_domain(domain: str):
+    """
+    Простейший парсер стоимости домена через adresso.de
+    """
+    try:
+        url = f"https://adresso.de/domain-bewertung/{domain}"
+        r = requests.get(url, timeout=10)
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        price_tag = soup.find("span", class_="price")
+        if not price_tag:
+            return "❌ Не удалось определить стоимость"
+
+        return price_tag.text.strip()
+    except Exception as e:
+        return f"Ошибка: {e}"
