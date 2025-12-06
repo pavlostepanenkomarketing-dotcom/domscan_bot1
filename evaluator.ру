@@ -1,19 +1,29 @@
 import requests
 from bs4 import BeautifulSoup
 
-def evaluate_domain(domain: str):
+def evaluate_domain(domain: str) -> str:
     """
-    Простейший парсер стоимости домена через adresso.de
+    Получает цену домена с сайта adresso.de.
+    Возвращает строку с оценкой или сообщение об ошибке.
     """
+
     try:
-        url = f"https://adresso.de/domain-bewertung/{domain}"
-        r = requests.get(url, timeout=10)
-        soup = BeautifulSoup(r.text, "html.parser")
+        url = f"https://adresso.de/domain-bewertung/?domain={domain}"
+        response = requests.get(url, timeout=10)
 
-        price_tag = soup.find("span", class_="price")
+        if response.status_code != 200:
+            return "Ошибка доступа"
+
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Ищем цену на странице
+        price_tag = soup.find("span", {"class": "domprice"})
+
         if not price_tag:
-            return "❌ Не удалось определить стоимость"
+            return "Не удалось найти цену"
 
-        return price_tag.text.strip()
+        price = price_tag.get_text(strip=True)
+        return price
+
     except Exception as e:
         return f"Ошибка: {e}"
