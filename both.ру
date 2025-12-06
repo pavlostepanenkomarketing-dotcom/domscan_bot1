@@ -1,0 +1,31 @@
+import logging
+from telegram.ext import Updater, CommandHandler
+from evaluator import evaluate_domain
+
+logging.basicConfig(level=logging.INFO)
+
+def start(update, context):
+    update.message.reply_text("👋 Привет! Отправь домен, и я проверю его стоимость.")
+
+def check(update, context):
+    domain = update.message.text.strip()
+    price = evaluate_domain(domain)
+    update.message.reply_text(f"💰 Примерная стоимость {domain}: {price} €")
+
+def main():
+    import os
+    TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", start))
+
+    dp.add_handler(CommandHandler("check", check))
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == "__main__":
+    main()
