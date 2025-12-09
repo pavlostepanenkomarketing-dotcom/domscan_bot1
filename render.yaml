@@ -5,4 +5,4 @@ services:
   region: frankfurt
   rootDir: domscan_bot1
   buildCommand: "pip install -r requirements.txt"
-  startCommand: "python both.py"
+  startCommand: "python domscan_bot1/both.py"
